@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora CVSS 3.1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --primary-dark: #3a56d4;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --body-bg: #f0f2f5;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--body-bg);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            padding: 0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background-color: var(--card-bg);
+            border-radius: 50% 50% 0 0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .authors {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 40px 30px 30px;
+        }
+
+        .metric-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-item {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark-color);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark-color);
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234a6cf7' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: calc(100% - 15px) center;
+            padding-right: 40px;
+        }
+
+        select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
+            outline: none;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 108, 247, 0.3);
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 108, 247, 0.4);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .result {
+            text-align: center;
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid var(--primary-color);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result p:first-child {
+            font-size: 1.1rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .score {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .severity {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .severity.critical {
+            background-color: #ff5252;
+            color: white;
+        }
+
+        .severity.high {
+            background-color: #ff9100;
+            color: white;
+        }
+
+        .severity.medium {
+            background-color: #ffeb3b;
+            color: #333;
+        }
+
+        .severity.low {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .severity.none {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        .vector-string {
+            margin-top: 20px;
+            background-color: rgba(0,0,0,0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .vector-string p {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            margin-bottom: 8px;
+        }
+
+        .vector-string code {
+            display: block;
+            font-family: monospace;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            color: var(--primary-dark);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .metric-group {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 30px 20px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Calculadora CVSS 3.1</h1>
+            <div class="authors">
+                Desarrollado por:<br>
+                Gabriel de Jesús Cornejo Luna<br>
+                Joel Zavala Duran<br>
+                Salón 5-A de Ciberseguridad
+            </div>
+        </div>
+        
+        <div class="content">
+            <form method="POST">
+                <div class="metric-group">
+                    <div class="metric-item">
+                        <label for="attack_vector">Vector de Ataque:</label>
+                        <select name="attack_vector" required>
+                            <option value="N">Red (N)</option>
+                            <option value="A">Adyacente (A)</option>
+                            <option value="L">Local (L)</option>
+                            <option value="P">Físico (P)</option>
+                        </select>
+                    </div>
+
+                    <div class="metric-item">
+                        <label for="attack_complexity">Complejidad de Ataque:</label>
+                        <select name="attack_complexity" required>
+                            <option value="L">Baja (L)</option>
+                            <option value="H">Alta (H)</option>
+                        </select>
+                    </div>
+
+                    <div class="metric-item">
+                        <label for="privilege_required">Privilegios Requeridos:</label>
+                        <select name="privilege_required" required>
+                            <option value="N">Ninguno (N)</option>
+                            <option value="L">Bajo (L)</option>
+                            <option value="H">Alto (H)</option>
+                        </select>
+                    </div>
+
+                    <div class="metric-item">
+                        <label for="user_interaction">Interacción del Usuario:</label>
+                        <select name="user_interaction" required>
+                            <option value="N">Ninguna (N)</option>
+                            <option value="R">Requerida (R)</option>
+                        </select>
+                    </div>
+
+                    <div class="metric-item">
+                        <label for="scope">Alcance:</label>
+                        <select name="scope" required>
+                            <option value="U">Sin Cambios (U)</option>
+                            <option value="C">Cambiado (C)</option>
+                        </select>
+                    </div>
+
+                    <div class="metric-item">
+                        <label for="impact_conf">Impacto en Confidencialidad:</label>
+                        <select name="impact_conf" required>
+                            <option value="H">Alto (H)</option>
+                            <option value="L">Bajo (L)</option>
+                            <option value="N">Ninguno (N)</option>
+                        </select>
+                    </div>
+
+                    <div class="metric-item">
+                        <label for="impact_integ">Impacto en Integridad:</label>
+                        <select name="impact_integ" required>
+                            <option value="H">Alto (H)</option>
+                            <option value="L">Bajo (L)</option>
+                            <option value="N">Ninguno (N)</option>
+                        </select>
+                    </div>
+
+                    <div class="metric-item">
+                        <label for="impact_avail">Impacto en Disponibilidad:</label>
+                        <select name="impact_avail" required>
+                            <option value="H">Alto (H)</option>
+                            <option value="L">Bajo (L)</option>
+                            <option value="N">Ninguno (N)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit">Calcular Puntuación CVSS</button>
+            </form>
+
+            {% if result is not none %}
+            <div class="result">
+                <p>Puntuación Base CVSS 3.1:</p>
+                <p class="score">{{ result }}</p>
+                <span class="severity {% if severity == 'Crítico' %}critical{% elif severity == 'Alto' %}high{% elif severity == 'Medio' %}medium{% elif severity == 'Bajo' %}low{% else %}none{% endif %}">{{ severity }}</span>
+                {% if vector_string %}
+                <div class="vector-string">
+                    <p>Vector String:</p>
+                    <code>{{ vector_string }}</code>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
